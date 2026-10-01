@@ -1,0 +1,47 @@
+name: Compilar APK React Native Expo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-size: 20
+
+      - name: Configurar Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Configurar SDK de Android
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar dependencias del proyecto
+        run: npm install
+
+      - name: Instalar CLI de Expo globalmente
+        run: npm install -g expo-cli
+
+      - name: Generar archivos nativos (Prebuild)
+        run: npx expo prebuild --platform android
+
+      - name: Compilar APK de producción con Gradle
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Guardar APK como Artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: App-Release-APK
+          path: android/app/build/outputs/apk/release/app-release.apk
