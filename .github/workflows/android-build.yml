@@ -22,14 +22,14 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Configurar SDK de Android
-        uses: android-actions/setup-android@v3
+      - name: Instalar SDK de Android manualmente
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y android-sdk
+          echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
 
       - name: Instalar dependencias del proyecto
         run: npm install
-
-      - name: Instalar CLI de Expo globalmente
-        run: npm install -g expo-cli
 
       - name: Generar archivos nativos (Prebuild)
         run: npx expo prebuild --platform android
@@ -45,4 +45,5 @@ jobs:
         with:
           name: App-Release-APK
           path: android/app/build/outputs/apk/release/app-release.apk
+outputs/apk/release/app-release.apk
 
